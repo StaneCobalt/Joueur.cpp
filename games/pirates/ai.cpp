@@ -74,8 +74,9 @@ bool AI::run_turn()
 /// A very basic path finding algorithm (Breadth First Search) that when given a starting Tile, will return a valid path to the goal Tile.
 /// <param name="start">the starting Tile</param>
 /// <param name="goal">the goal Tile</param>
+/// <param name="unit">the Unit that will move</param>
 /// <return>A List of Tiles representing the path, the the first element being a valid adjacent Tile to the start, and the last element being the goal. Or an empty list if no path found.</return>
-std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal)
+std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit& unit)
 {
     // no need to make a path to here...
     if(start == goal)
@@ -133,7 +134,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal)
             }
 
             // if the tile exists, has not been explored or added to the fringe yet, and it is pathable
-            if(neighbor && came_from.count(neighbor) == 0 && neighbor->is_pathable())
+            if(neighbor && came_from.count(neighbor) == 0 && neighbor->is_pathable(unit))
             {
                 // add it to the tiles to be explored and add where it came from.
                 fringe.push(neighbor);
