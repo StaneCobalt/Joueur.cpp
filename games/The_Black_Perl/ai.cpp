@@ -59,6 +59,7 @@ void AI::ended(bool won, const std::string& reason)
     //<<-- /Creer-Merge: ended -->>
 }
 
+
 /// <summary>
 /// This is called every time it is this AI.player's turn.
 /// </summary>
@@ -77,63 +78,18 @@ bool AI::run_turn()
         // Spawn a ship so our crew can sail
         this->player->port->spawn("ship");
     }
-    else if (this->player->units[0]->ship_health < this->game->ship_health / 2)
+
+    if (this->player->units[0]->ship_health < this->game->ship_health / 2)
     {
-        // Heal our unit if the ship is almost dead
-        // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
-        Unit unit = this->player->units[0];
+      // Heal our unit if the ship is almost dead
+      // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
 
-        // Find a path to our port so we can heal
-        std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
-        if (path.size() > 0)
-        {
-            // Move along the path if there is one
-            unit->move(path[0]);
-        }
-        else
-        {
-            // Try to deposit any gold we have while we're here
-            unit->deposit();
-
-            // Try to rest
-            unit->rest();
-        }
+      damaged_ship_heal();
     }
     else
     {
-        // Try to attack a merchant
-        Unit unit = this->player->units[0];
-
-        // Look for a merchant ship
-        Unit merchant = NULL;
-        std::vector<Unit> units = this->game->units;
-        for (unsigned int i = 0; i < units.size(); i++)
-        {
-            if (units[i]->target_port != NULL)
-            {
-                // Found one
-                merchant = units[i];
-                break;
-            }
-        }
-
-        // If we found a merchant, move to it, then attack it
-        if (merchant != NULL)
-        {
-            // Find a path to this merchant
-            std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
-            if (path.size() > this->game->ship_range)
-            {
-                // Move until we're withing firing range of the merchant
-                // Node: Range is *Circular* in pirates, so this can be improved on
-                unit->move(path[0]);
-            }
-            else
-            {
-                // Try to attack the merchant's ship
-                unit->attack(merchant->tile, "ship");
-            }
-        }
+      merchant_logic();
+      
     }
 
     // <<-- /Creer-Merge: runTurn -->>
@@ -221,6 +177,63 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add additional methods here for your AI to call
+
+bool AI::damaged_ship_heal(){
+  Unit unit = this->player->units[0];
+
+  // Find a path to our port so we can heal
+  std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
+  if (path.size() > 0)
+    {
+      // Move along the path if there is one
+      unit->move(path[0]);
+    }
+  else
+    {
+      // Try to deposit any gold we have while we're here
+      unit->deposit();
+
+      // Try to rest
+      unit->rest();
+    }
+}
+
+  bool AI::merchant_logic(){
+      // Try to attack a merchant
+      Unit unit = this->player->units[0];
+
+      // Look for a merchant ship
+      Unit merchant = NULL;
+      std::vector<Unit> units = this->game->units;
+      for (unsigned int i = 0; i < units.size(); i++)
+      {
+          if (units[i]->target_port != NULL)
+          {
+              // Found one
+              merchant = units[i];
+              break;
+          }
+      }
+
+      // If we found a merchant, move to it, then attack it
+      if (merchant != NULL)
+      {
+          // Find a path to this merchant
+          std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
+          if (path.size() > this->game->ship_range)
+          {
+              // Move until we're withing firing range of the merchant
+              // Node: Range is *Circular* in pirates, so this can be improved on
+              unit->move(path[0]);
+          }
+          else
+          {
+              // Try to attack the merchant's ship
+              unit->attack(merchant->tile, "ship");
+          }
+      }
+  }
+
 //<<-- /Creer-Merge: methods -->>
 
 } // pirates
