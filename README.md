@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Joueur.cpp
 SIGGAME-Pirates
 =======
