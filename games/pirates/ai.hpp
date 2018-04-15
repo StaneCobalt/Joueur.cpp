@@ -122,6 +122,7 @@ public:
   	// TODO: Not likely a permanent function.
     void merchant_logic(Unit unit);
 
+    void endgame_aggression(Unit unit);
 
 
 
