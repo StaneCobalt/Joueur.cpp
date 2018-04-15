@@ -98,7 +98,7 @@ bool AI::run_turn(){
 				if(high_threat(u)){
 					this->retreat(u);
 				}
-				else if (this->ga->max_turns-500 < this->game->current_turn){
+				else if (this->game->max_turns-500 < this->game->current_turn){
 					this->endgame_aggression(u);
 				}
 				else{
@@ -321,7 +321,6 @@ double AI::distance(Unit unit1, Unit unit2){
 	}
   /////////////////////////////////////////////////////////////////
   
-  
 	void AI::retreat(Unit this_unit){
 		this->retreat_rest(this_unit);
 	}
@@ -364,7 +363,7 @@ double AI::distance(Unit unit1, Unit unit2){
     }
     else{
       // Try to attack the nearest enemy ship. 
-      this->unit->attack(closest_enemy->tile, "ship");
+      unit->attack(closest_enemy->tile, "ship");
     }
 
   }
@@ -402,8 +401,8 @@ double AI::distance(Unit unit1, Unit unit2){
 
 		std::cout << "1" << std::endl;
 		//If you can't fire on the enemy, move closer to the port.
-		while(this->unit->moves > 0){
-			if (distance(this->unit,closest_enemy) > this->game->ship_range){
+		while(unit->moves > 0){
+			if (distance(unit,closest_enemy) > this->game->ship_range){
 				unit->move(path[0]);
 			}
 			else{
