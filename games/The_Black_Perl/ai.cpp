@@ -211,10 +211,10 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 	}
 
   
-bool AI::retreat(){
+void AI::retreat(){
   this->retreat_rest();
 }
-bool AI::retreat_rest(){
+void AI::retreat_rest(){
   //Running away, and healing.
   Unit unit = this->player->units[0];
 
@@ -235,7 +235,7 @@ bool AI::retreat_rest(){
     }
 }
 
-  bool AI::merchant_logic(){
+  void AI::merchant_logic(){
       // Try to attack a merchant
       Unit unit = this->player->units[0];
 
