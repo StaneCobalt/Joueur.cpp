@@ -347,10 +347,11 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     std::vector<Port> m_ports;						//All the merchant ports on the map.
 
     // Look for merchant ports.
-		for(Port p: this->game->ports){
-    	if(p->owner == NULL)
-        m_ports.push_back(p);
-    }
+	for(Port p: this->game->ports){
+		if(p->owner == NULL){
+			m_ports.push_back(p);
+		}
+	}
 
     //Decide which port to lazy river at.
     auto murder_location = m_ports[0]->tile;
@@ -358,23 +359,24 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     std::vector<Tile> path = this->find_path(unit->tile, murder_location, unit);
 
     //Pick the closest approaching enemy (usually a merchant).
-    float closest_dist = 100;
+    float closest_dist = 100.0f;
     Unit closest_enemy;
     for(Unit u: this->game->units){
-      if(u->owner != unit->owner && closest_dist < this->distance(unit, u)){
-        closest_enemy = u;
-      }
+		if(u->owner != unit->owner && closest_dist < this->distance(unit, u)){
+			closest_enemy = u;
+		}
     }
 
     //If you can't fire on the enemy, move closer to the port.
-    if (distance(unit,closest_enemy) > this->game->ship_range){
-      unit->move(path[0]);
-    }
-    else{
-      // Try to attack the nearest enemy ship. 
-      unit->attack(closest_enemy->tile, (std::string)"ship");
-    }
-
+	while(this->unit->moves > 0){
+		if (distance(unit,closest_enemy) > this->game->ship_range){
+		  this->unit->move(path[0]);
+		}
+		else{
+		  // Try to attack the nearest enemy ship. 
+		  this->unit->attack(closest_enemy->tile, "ship");
+		}
+	}
 	}
 
 //<<-- /Creer-Merge: methods -->>
