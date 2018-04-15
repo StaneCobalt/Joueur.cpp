@@ -84,6 +84,10 @@ public:
 /// <return>A List of Tiles representing the path, the the first element being a valid adjacent Tile to the start, and the last element being the goal. Or an empty list if no path found.</return>
 std::vector<Tile> find_path(const Tile& start, const Tile& goal, const Unit& unit);
 
+  //distance func
+  //returns a double which is the coordinate distance between the argument units
+  std::vector<double> distance(Unit unit1, Unit unit2);
+
 
 
     // ####################
