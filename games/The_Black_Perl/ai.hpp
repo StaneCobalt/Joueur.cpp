@@ -78,7 +78,10 @@ public:
 
 
 
-
+  //distance func
+  //returns a double which is the coordinate distance between the argument units
+  std::vector<double> distance(Unit unit1, Unit unit2);
+  
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
     bool retreat();
