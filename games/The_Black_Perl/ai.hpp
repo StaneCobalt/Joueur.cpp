@@ -93,6 +93,8 @@ public:
 
   //returns a vector which contains the ship hp of all enemy ships
   std::vector<int> enemy_fleet_health();
+
+  std::vector<int> enemy_fleet_crew_count();
   
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
