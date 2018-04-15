@@ -78,7 +78,7 @@ public:
 
     //<summary>
   	// This function, when called, signals a ship's frantic retreat for the port, it's attempt is to be healed.
-    bool AI::damaged_ship_heal();
+    bool AI::retreat_heal();
 
     //<summary>
   	// Here is where we define any form of attack towards a merchant.

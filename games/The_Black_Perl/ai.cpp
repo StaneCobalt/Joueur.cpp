@@ -178,7 +178,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add additional methods here for your AI to call
 
-bool AI::damaged_ship_heal(){
+bool AI::retreat_heal(){
   Unit unit = this->player->units[0];
 
   // Find a path to our port so we can heal
