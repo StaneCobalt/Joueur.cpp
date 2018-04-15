@@ -80,9 +80,13 @@ bool AI::run_turn()
     case 0:
       // Spawn a crew if we have no units
       this->player->port->spawn("crew");
+	  break;
     case 1:
       // Spawn a ship so our crew can sail
       this->player->port->spawn("ship");
+	  break;
+	 default:
+	  break;
     }
 
     // Heal our unit if the ship is almost dead
