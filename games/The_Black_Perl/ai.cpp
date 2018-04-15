@@ -212,7 +212,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
   std::vector<double> AI::dist_to_enemies(Unit the_unit){
     std::vector<double> temp; //return vector
     for(Unit u : this->player->opponent->units){
-      if(u->ship_health > 0){
+      if(u->ship_health > 0){ //if the unit is a ship
 	temp.push_back(distance(u, the_unit));
       }
     }
@@ -229,6 +229,18 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     }
     return temp;
   }
+
+  std::vector<int> AI::enemy_fleet_crew_count(){
+    std::vector<int> temp; //return vector
+    for(Unit u : this->player->opponent->units){
+      if(u->ship_health > 0){ //if the unit is a ship
+	temp.push_back(u->crew);
+      }
+    }
+    return temp;
+  }
+
+  
   /////////////////////////////////////////////////////////////////
   
   
