@@ -81,6 +81,9 @@ public:
   //distance func
   //returns a double which is the coordinate distance between the argument units
   double distance(Unit unit1, Unit unit2);
+
+  //returns a vector which contains the distances of all enemy units
+  std::vector<double> dist_to_enemies(Unit the_unit);
   
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
