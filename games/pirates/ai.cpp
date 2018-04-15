@@ -1,21 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Explore
- @StaneCobalt
-Sign out
-0
-0 0 StaneCobalt/Joueur.cpp
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
-Joueur.cpp/games/pirates/ai.cpp
-b671a17  a day ago
-@StaneCobalt StaneCobalt Update: having low hp can also trigger retreat now
-@StaneCobalt @Spalynx @dman620 @TehPers @trunko
-     
-420 lines (358 sloc)  12.9 KB
 // AI
 // This is where you build your AI
 
@@ -435,16 +417,3 @@ double AI::distance(Unit unit1, Unit unit2){
 } // pirates
 
 } // cpp_client
-© 2018 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-API
-Training
-Shop
-Blog
-About
-Press h to open a hovercard with more details.
