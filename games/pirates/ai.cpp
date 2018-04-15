@@ -85,35 +85,35 @@ bool AI::run_turn()
         // Spawn a ship so our crew can sail
         this->player->port->spawn("ship");
     }
-    else if(this->player->port->tile->unit == NULL && this->player->gold >= 800){
-      this->player->port->spawn("crew");
+    else if(this->player->port->tile->unit == NULL && this->player->gold >= 200){
+		this->player->port->spawn("crew");
     }
     else if( (this->player->port->tile->unit != NULL && this->player->port->tile->unit->ship_health == 0) && this->player->gold >=600){
-      this->player->port->spawn("ship");
-    }
-    // Heal our unit if the ship is almost dead
-    // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
-      else{
-      //multiship logic now:
-        for(Unit u : this->player->units){//for each unit we control
-          if(u->ship_health > 0){//then u is a ship controlled by me
-            if(u->ship_health < 10){
-              this->retreat(u);
-            }
-            else if (this->ga->max_turns-500 < this->game->current_turn)
-            {
-              this->endgame_aggression(u);
-            }
-            else
-            {
-              this->merchant_logic(u);
-            }
-          }
-        }
-      }
+		this->player->port->spawn("ship");
+	}
  
 
+    // Heal our unit if the ship is almost dead
+    // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
 
+	else{
+		//multiship logic now:
+		for(Unit u : this->player->units){//for each unit we control
+			if(u->ship_health > 0){
+				//then u is a ship controlled by me
+				if(u->ship_health < 10){
+					this->retreat(u);
+				}
+        else if (this->ga->max_turns-500 < this->game->current_turn)
+          {
+            this->endgame_aggression(u);
+          }
+				else{
+					this->merchant_logic(u);
+				}
+			}
+		}
+	}
 
     // <<-- /Creer-Merge: runTurn -->>
     return true;
@@ -267,87 +267,87 @@ double AI::distance(Unit unit1, Unit unit2){
 		return enemyCount > allyCount;
 	}
   
-  template <typename T>
-  void AI::display_vector(std::vector<T> vec){
-    typename std::vector<T>::iterator itr;
-    for(itr = vec->begin(); itr!= vec.end(); itr++){
-      std::cout << *itr << std::endl;
-    }
-  }
+	template <typename T>
+	void AI::display_vector(std::vector<T> vec){
+		typename std::vector<T>::iterator itr;
+		for(itr = vec->begin(); itr!= vec.end(); itr++){
+			std::cout << *itr << std::endl;
+		}
+	}
   
-  std::vector<double> AI::dist_to_allies(Unit the_unit){
-    std::vector<double> temp; //return vector
-    for(Unit u : this->player->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(distance(u, the_unit));
-      }
-    }
-    return temp;
-  }
-  
-  std::vector<double> AI::dist_to_enemies(Unit the_unit){
-    std::vector<double> temp; //return vector
-    for(Unit u : this->player->opponent->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(distance(u, the_unit));
-      }
-    }
-    return temp;
-  }
+	std::vector<double> AI::dist_to_allies(Unit the_unit){
+		std::vector<double> temp; //return vector
+		for(Unit u : this->player->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(distance(u, the_unit));
+			}
+		}
+		return temp;
+	}
 
-  //returns the hp of the enemy fleet
-  std::vector<int> AI::enemy_fleet_health(){
-    std::vector<int> temp; //return vector
-    for(Unit u : this->player->opponent->units) {
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(u->ship_health);
-      }
-    }
-    return temp;
-  }
+	std::vector<double> AI::dist_to_enemies(Unit the_unit){
+		std::vector<double> temp; //return vector
+		for(Unit u : this->player->opponent->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(distance(u, the_unit));
+			}
+		}
+		return temp;
+	}
 
-  std::vector<int> AI::enemy_fleet_crew_count(){
-    std::vector<int> temp; //return vector
-    for(Unit u : this->player->opponent->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(u->crew);
-      }
-    }
-    return temp;
-  }
+	//returns the hp of the enemy fleet
+	std::vector<int> AI::enemy_fleet_health(){
+		std::vector<int> temp; //return vector
+		for(Unit u : this->player->opponent->units) {
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(u->ship_health);
+			}
+		}
+		return temp;
+	}
 
-  std::vector<Unit> AI::find_abandoned_ships(){
-    std::vector<Unit> temp; //return vector
-    for(Unit u : this->game->units)//for every unit in the game..
-      //if it is a healthy ship with no crew then...
-      if(u->ship_health > 0 && u->crew == 0)
-	temp.push_back(u);
-    return temp;
-  }
+	std::vector<int> AI::enemy_fleet_crew_count(){
+		std::vector<int> temp; //return vector
+		for(Unit u : this->player->opponent->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(u->crew);
+			}
+		}
+		return temp;
+	}
+
+	std::vector<Unit> AI::find_abandoned_ships(){
+		std::vector<Unit> temp; //return vector
+		for(Unit u : this->game->units){//for every unit in the game..
+			//if it is a healthy ship with no crew then...
+			if(u->ship_health > 0 && u->crew == 0){
+				temp.push_back(u);
+			}
+		}
+		return temp;
+	}
   /////////////////////////////////////////////////////////////////
   
   
 	void AI::retreat(Unit this_unit){
-	  this->retreat_rest(this_unit);
+		this->retreat_rest(this_unit);
 	}
 	void AI::retreat_rest(Unit this_unit){
-	  //Running away, and healing.
-	  Unit unit = this_unit;
+		//Running away, and healing.
+		Unit unit = this_unit;
 
-	  // Find a path to our port so we can heal
-	  std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
-	  if (path.size() > 0)
-		{
-		  // Move along the path if there is one
-		  unit->move(path[0]);
+		// Find a path to our port so we can heal
+		std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
+		if (path.size() > 0){
+			// Move along the path if there is one
+			unit->move(path[0]);
 		}
-	  else
-		{
-		  // Try to deposit any gold we have while we're here
-		  unit->deposit();
+		else{
+			// Try to deposit any gold we have while we're here
+			unit->deposit();
 
-		  // Try to rest
-		  unit->rest();
+			// Try to rest
+			unit->rest();
 		}
 	}
 
@@ -380,10 +380,11 @@ double AI::distance(Unit unit1, Unit unit2){
     std::vector<Port> m_ports;						//All the merchant ports on the map.
 
     // Look for merchant ports.
-		for(Port p: this->game->ports){
-    	if(p->owner == NULL)
-        m_ports.push_back(p);
-    }
+	for(Port p: this->game->ports){
+		if(p->owner == NULL){
+			m_ports.push_back(p);
+		}
+	}
 
     //Decide which port to lazy river at.
     auto murder_location = m_ports[0]->tile;
@@ -391,7 +392,7 @@ double AI::distance(Unit unit1, Unit unit2){
     std::vector<Tile> path = this->find_path(unit->tile, murder_location, unit);
 
     //Pick the closest approaching enemy (usually a merchant).
-    float closest_dist = 100;
+    float closest_dist = 100.0f;
     Unit closest_enemy;
 
     for(Unit u: this->game->units){
@@ -409,14 +410,16 @@ double AI::distance(Unit unit1, Unit unit2){
 
     std::cout << "1" << std::endl;
     //If you can't fire on the enemy, move closer to the port.
-    if (distance(unit,closest_enemy) > this->game->ship_range){
-      unit->move(path[0]);
-    }
-    else{
-      // Try to attack the nearest enemy ship. 
-      unit->attack(closest_enemy->tile, "ship");
-    }
+    while(unit->moves > 0){
+      if (distance(unit,closest_enemy) > this->game->ship_range){
+        unit->move(path[0]);
+      }
+      else{
+        // Try to attack the nearest enemy ship. 
+        unit->attack(closest_enemy->tile, "ship");
+      }
 
+		}
 	}
 
 //<<-- /Creer-Merge: methods -->>
