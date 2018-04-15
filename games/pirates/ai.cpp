@@ -267,7 +267,7 @@ double AI::distance(Unit unit1, Unit unit2){
 			std::cout << *itr << std::endl;
 		}
 	}
-  
+
 	vector<double> AI::dist_to_allies(Unit the_unit){
 		vector<double> temp; //return vector
 		for(Unit u : this->player->units){
