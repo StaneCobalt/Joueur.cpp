@@ -88,6 +88,8 @@ public:
   //should refer to the same enemy unit, provided that the functinos are called in
   //the SAME TURN
 
+  float get_threat(Unit unit);
+  
   template <typename T>
   void display_vector(std::vector<T> vec);
   

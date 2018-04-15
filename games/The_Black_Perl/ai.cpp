@@ -216,6 +216,31 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
   ////////////////////////////ENEMY INFO FUNCTIONS////////////////////
   //vector functions that return info on enemy ships, see ai.hpp for more info
 
+  float get_threat(Unit unit){
+		//returns our current threat level, a value from 0.0 - 1.0
+		//thresholds are scaled up for larger range when unit has low hp
+		float unitHealth = (float)(unit->ship_health/20);
+		int healthScale = (1 - unitHealth)*10; //automagic flooring
+		float low = 3.0f + (float)healthScale; //lower threshold
+		float up = 10.0f + (float)healthScale; //upper threshold
+		vector<double> enemyDistances = dist_to_enemies(unit);
+		int size = enemyDistances.size();
+		float f, isNear, isFar, threat = 0.0;
+		foreach(double ed : enemyDistances){
+			f = (float)ed;
+			isFar = Fuzzy.Grade(f,low,up);
+			isNear = Fuzzy.NOT(isFar);
+			if(isNear >= isFar){
+				/* if enemy is considered near
+				   in relation to our health
+				   then add them to the count
+				*/
+				threat += 1.0f;
+			}
+		}
+		return Fuzzy.NOT(Fuzzy.Triangle(threat, 5.0f, 2.0f, 8.0f));
+	}
+  
   template <typename T>
   void AI::display_vector(std::vector<T> vec){
     typename std::vector<T>::iterator itr;
