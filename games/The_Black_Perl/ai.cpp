@@ -204,17 +204,17 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
   ////////////////////////////ENEMY INFO FUNCTIONS////////////////////
   //vector functions that return info on enemy ships, see ai.hpp for more info
 
-  float get_threat(Unit unit){
+  bool high_threat(Unit unit){
 		//returns our current threat level, a value from 0.0 - 1.0
 		//thresholds are scaled up for larger range when unit has low hp
 		float unitHealth = (float)(unit->ship_health/20);
 		int healthScale = (1 - unitHealth)*10; //automagic flooring
 		float low = 3.0f + (float)healthScale; //lower threshold
 		float up = 10.0f + (float)healthScale; //upper threshold
-		vector<double> enemyDistances = dist_to_enemies(unit);
-		int size = enemyDistances.size();
-		float f, isNear, isFar, threat = 0.0;
-		foreach(double ed : enemyDistances){
+		std::vector<double> enemyDistances = dist_to_enemies(unit);
+		float f, isNear, isFar;
+		int enemyCount;
+		for(double ed : enemyDistances){
 			f = (float)ed;
 			isFar = Fuzzy.Grade(f,low,up);
 			isNear = Fuzzy.NOT(isFar);
@@ -223,10 +223,24 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 				   in relation to our health
 				   then add them to the count
 				*/
-				threat += 1.0f;
+				enemyCount++;
 			}
 		}
-		return Fuzzy.Grade(threat, 2.0f, 4.0f);
+		//thresholds are tighter when hp is lower for allies, since it needs more immediate protection
+		low = 6.0f - (float)healthScale;
+		high = 13.0f - (float)healthScale;
+		std::vector<double> allyDistances = dist_to_allies(unit);
+		int allyCount;
+		for(double ad : allyDistances){
+			f = (float)ad;
+			isFar = Fuzzy.Grade(f,low,up);
+			isNear = Fuzzy.NOT(isFar);
+			if(isNear >= isFar){
+				/* if ally is close enough to help */
+				allyCount++;
+			}
+		}
+		return enemyCount > allyCount;
 	}
   
   template <typename T>
@@ -235,6 +249,16 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     for(itr = vec->begin(); itr!= vec.end(); itr++){
       std::cout << *itr << std::endl;
     }
+  }
+  
+  std::vector<double> AI::dist_to_allies(Unit the_unit){
+    std::vector<double> temp; //return vector
+    for(Unit u : this->player->units){
+      if(u->ship_health > 0){ //if the unit is a ship
+	temp.push_back(distance(u, the_unit));
+      }
+    }
+    return temp;
   }
   
   std::vector<double> AI::dist_to_enemies(Unit the_unit){

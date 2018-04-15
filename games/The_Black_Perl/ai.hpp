@@ -88,10 +88,13 @@ public:
   //should refer to the same enemy unit, provided that the functinos are called in
   //the SAME TURN
 
-  float get_threat(Unit unit);
+  bool high_threat(Unit unit);
   
   template <typename T>
   void display_vector(std::vector<T> vec);
+  
+  //returns a vector which contains the distances of all ally units
+  std::vector<double> AI::dist_to_allies(Unit the_unit);
   
   //returns a vector which contains the distances of all enemy units
   std::vector<double> dist_to_enemies(Unit the_unit);
