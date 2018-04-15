@@ -1,4 +1,4 @@
-class Fuzzy {
+static class Fuzzy {
 	public:
 			float AND(float A, float B) { return (A < B) ? A : B; }
 			float OR(float A, float B) { return (A > B) ? A : B; }
@@ -18,4 +18,4 @@ float Fuzzy::Triangle(float x, float m, float lowerThreshold, float upperThresho
 	else if(x >= upperThreshold) return 1.0f;
 	else if(x <= m) return (x - lowerThreshold)/(m - lowerThreshold);
 	return (upperThreshold - x)/(upperThreshold - m);
-}
+};
