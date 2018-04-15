@@ -220,6 +220,25 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     return {};
 }
 
+  //distance function:
+  //returns the distance between two units passed as arguments
+  	double AI::distance(Unit unit1, Unit unit2){
+		//values that will determine distance;
+		int x1 = unit1->tile->x;
+		int x2 = unit2->tile->x;
+		int y1 = unit1->tile->y;
+		int y2 = unit2->tile->y;
+		
+		//this is to make less writing
+		int distancex = x1 - x2;
+		int distancey = y1 - y2;
+		
+		//euclidean distance formula
+		return sqrt(distancex*distancex + distancey*distancey);
+
+	}
+	
+
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add additional methods here for your AI to call
 //<<-- /Creer-Merge: methods -->>
