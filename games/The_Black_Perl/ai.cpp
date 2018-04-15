@@ -215,6 +215,14 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 
   ////////////////////////////ENEMY INFO FUNCTIONS////////////////////
   //vector functions that return info on enemy ships, see ai.hpp for more info
+
+  template <typename T>
+  void AI::display_vector(std::vector<T> vec){
+    typename std::vector<T>::iterator itr;
+    for(itr = vec->begin(); itr!= vec.end(); itr++){
+      std::cout << *itr << std::endl;
+    }
+  }
   
   std::vector<double> AI::dist_to_enemies(Unit the_unit){
     std::vector<double> temp; //return vector
@@ -247,7 +255,14 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
     return temp;
   }
 
-  
+  std::vector<Unit> AI::find_abandoned_ships(){
+    std::vector<Unit> temp; //return vector
+    for(Unit u : this->game->units)//for every unit in the game..
+      //if it is a healthy ship with no crew then...
+      if(u->ship_health > 0 && u->crew == 0)
+	temp.push_back(u);
+    return temp;
+  }
   /////////////////////////////////////////////////////////////////
   
   

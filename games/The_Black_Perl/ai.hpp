@@ -87,6 +87,9 @@ public:
   //based upon the way the info is fetched, the respective indexes of the vectors
   //should refer to the same enemy unit, provided that the functinos are called in
   //the SAME TURN
+
+  template <typename T>
+  void display_vector(std::vector<T> vec);
   
   //returns a vector which contains the distances of all enemy units
   std::vector<double> dist_to_enemies(Unit the_unit);
@@ -94,8 +97,13 @@ public:
   //returns a vector which contains the ship hp of all enemy ships
   std::vector<int> enemy_fleet_health();
 
+  //finds every ship in the enemy fleet and returns a vector
+  //containing the number of crew in them.
+  //keep in mind an abandoned ship is not in the enemy fleet
   std::vector<int> enemy_fleet_crew_count();
-  
+
+  //function returns a vector containing all abandoned ships
+  std::vector<Unit> find_abandoned_ships();
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
     void retreat();
