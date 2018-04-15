@@ -76,14 +76,25 @@ public:
     // <<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // You can add additional methods here.
 
+
+
+
+  	//<summary>
+  	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
+    bool retreat();
+
     //<summary>
   	// This function, when called, signals a ship's frantic retreat for the port, it's attempt is to be healed.
-    bool AI::retreat_rest();
+    bool retreat_rest();
 
     //<summary>
   	// Here is where we define any form of attack towards a merchant.
   	// TODO: Not likely a permanent function.
-    bool AI::merchant_logic();
+    bool merchant_logic();
+
+
+
+
 
     // <<-- /Creer-Merge: methods -->>
 

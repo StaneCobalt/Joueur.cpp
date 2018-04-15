@@ -68,30 +68,42 @@ void AI::ended(bool won, const std::string& reason)
 bool AI::run_turn()
 {
     // <<-- Creer-Merge: runTurn -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+  
 
-    if (this->player->units.size() == 0)
+
+
+
+  	//Actions based upon unit sizes.
+    switch(this->player->units.size())
     {
-        // Spawn a crew if we have no units
-        this->player->port->spawn("crew");
-    }
-    else if (this->player->units[0]->ship_health == 0)
-    {
-        // Spawn a ship so our crew can sail
-        this->player->port->spawn("ship");
+    case 0:
+      // Spawn a crew if we have no units
+      this->player->port->spawn("crew");
+    case 1:
+      // Spawn a ship so our crew can sail
+      this->player->port->spawn("ship");
     }
 
+
+
+    // Heal our unit if the ship is almost dead
+    // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
     if (this->player->units[0]->ship_health < this->game->ship_health / 2)
     {
-      // Heal our unit if the ship is almost dead
-      // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
-
-      retreat_rest();
+      this->retreat();
     }
+
+    //Otherwise, just murder any random civilian.
     else
     {
-      merchant_logic();
+      this->merchant_logic();
       
     }
+
+
+
+
+
 
     // <<-- /Creer-Merge: runTurn -->>
     return true;
@@ -179,7 +191,11 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add additional methods here for your AI to call
 
+bool AI::retreat(){
+  this->retreat_rest();
+}
 bool AI::retreat_rest(){
+  //Running away, and healing.
   Unit unit = this->player->units[0];
 
   // Find a path to our port so we can heal
