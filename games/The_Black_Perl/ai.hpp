@@ -87,16 +87,16 @@ public:
   
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
-    bool retreat();
+    void retreat();
 
     //<summary>
   	// This function, when called, signals a ship's frantic retreat for the port, it's attempt is to be healed.
-    bool retreat_rest();
+    void retreat_rest();
 
     //<summary>
   	// Here is where we define any form of attack towards a merchant.
   	// TODO: Not likely a permanent function.
-    bool merchant_logic();
+    void merchant_logic();
 
 
 
