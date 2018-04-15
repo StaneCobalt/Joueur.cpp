@@ -95,7 +95,7 @@ bool AI::run_turn(){
 		for(Unit u : this->player->units){//for each unit we control
 			if(u->ship_health > 0){
 				//then u is a ship controlled by me
-				if(high_threat(u)){
+				if(high_threat(u) || u->ship_health < 10){
 					this->retreat(u);
 				}
 				else if (this->game->max_turns-500 < this->game->current_turn){
@@ -399,7 +399,7 @@ double AI::distance(Unit unit1, Unit unit2){
 			return;
 		}
 
-		std::cout << "1" << std::endl;
+		//std::cout << "1" << std::endl;
 		//If you can't fire on the enemy, move closer to the port.
 		while(unit->moves > 0){
 			if (distance(unit,closest_enemy) > this->game->ship_range){
