@@ -5,6 +5,7 @@
 
 // <<-- Creer-Merge: includes -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add #includes here for your AI.
+#include "fuzzy.hpp"
 // <<-- /Creer-Merge: includes -->>
 
 
@@ -23,7 +24,7 @@ std::string AI::get_name() const
 {
     // <<-- Creer-Merge: get-name -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // REPLACE WITH YOUR TEAM NAME!
-    return "Pirates C++ Player";
+    return "The Black Perl";
     // <<-- /Creer-Merge: get-name -->>
 }
 
