@@ -1,3 +1,21 @@
+Skip to content
+This repository
+Search
+Pull requests
+Issues
+Marketplace
+Explore
+ @StaneCobalt
+Sign out
+0
+0 0 StaneCobalt/Joueur.cpp
+ Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
+Joueur.cpp/games/pirates/ai.cpp
+b671a17  a day ago
+@StaneCobalt StaneCobalt Update: having low hp can also trigger retreat now
+@StaneCobalt @Spalynx @dman620 @TehPers @trunko
+     
+420 lines (358 sloc)  12.9 KB
 // AI
 // This is where you build your AI
 
@@ -7,6 +25,7 @@
 // You can add #includes here for your AI.
 #include "fuzzy.hpp"
 #include <cmath>
+using std::vector;
 // <<-- /Creer-Merge: includes -->>
 
 
@@ -25,7 +44,7 @@ std::string AI::get_name() const
 {
     // <<-- Creer-Merge: get-name -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // REPLACE WITH YOUR TEAM NAME!
-    return "The Black Perl";
+    return "The_Black_Perl";
     // <<-- /Creer-Merge: get-name -->>
 }
 
@@ -66,35 +85,46 @@ void AI::ended(bool won, const std::string& reason)
 /// This is called every time it is this AI.player's turn.
 /// </summary>
 /// <returns>Represents if you want to end your turn. True means end your turn, False means to keep your turn going and re-call this function.</returns>
-bool AI::run_turn()
-{
+bool AI::run_turn(){
     // <<-- Creer-Merge: runTurn -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-  
-
-<<<<<<< HEAD
-    //Actions based upon unit sizes.
-	if(this->player->units.size() <= 0){
-		// Spawn a crew if we have no units
-		this->player->port->spawn("crew");
-	}
-    else if (this->player->units[0]->ship_health == 0)
-    {
-      // Spawn a ship so our crew can sail
-      this->player->port->spawn("ship");
+	std::cout << "numUnits: " << this->player->units.size() << std::endl;
+  	//Actions based upon unit sizes.
+	if (this->player->units.size() == 0){
+        // Spawn a crew if we have no units
+        this->player->port->spawn("crew");
     }
+    else if (this->player->units[0]->ship_health == 0){
+        // Spawn a ship so our crew can sail
+        this->player->port->spawn("ship");
+    }
+    else if(this->player->port->tile->unit == NULL && this->player->gold >= 200){
+		this->player->port->spawn("crew");
+    }
+    else if( (this->player->port->tile->unit != NULL && this->player->port->tile->unit->ship_health == 0) && this->player->gold >=600){
+		this->player->port->spawn("ship");
+	}
+ 
+
     // Heal our unit if the ship is almost dead
     // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
-    else if (this->player->units[0]->ship_health < this->game->ship_health / 2)
-    {
-      this->retreat();
-    }
 
-    //Otherwise, just murder any random civilian.
-    else
-    {
-      this->merchant_logic();
-      
-    }
+	else{
+		//multiship logic now:
+		for(Unit u : this->player->units){//for each unit we control
+			if(u->ship_health > 0){
+				//then u is a ship controlled by me
+				if(high_threat(u) || u->ship_health < 10){
+					this->retreat(u);
+				}
+				else if (this->game->max_turns-500 < this->game->current_turn){
+					this->endgame_aggression(u);
+				}
+				else{
+						this->merchant_logic(u);
+				}
+			}
+		}
+	}
 
     // <<-- /Creer-Merge: runTurn -->>
     return true;
@@ -105,7 +135,7 @@ bool AI::run_turn()
 /// <param name="goal">the goal Tile</param>
 /// <param name="unit">the Unit that will move</param>
 /// <return>A List of Tiles representing the path, the the first element being a valid adjacent Tile to the start, and the last element being the goal. Or an empty list if no path found.</return>
-std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit& unit)
+  vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit& unit)
 {
     // no need to make a path to here...
     if(start == goal)
@@ -130,7 +160,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
         fringe.pop();
 
         // Note, we are using the `auto` keyword here
-        //   The compiler can discern that this is a `std::vector<Tile>` based on the return type of `getNeighbors()`
+        //   The compiler can discern that this is a `vector<Tile>` based on the return type of `getNeighbors()`
         auto neighbors = inspect->get_neighbors();
 
         // cycle through the tile's neighbors.
@@ -154,7 +184,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
                 // we want to return a vector as that's what we use for all containers in C++
                 // (and they don't have push_front like we need)
                 // So construct the vector-ized path here
-                std::vector<Tile> vector_path;
+                vector<Tile> vector_path;
                 for(auto& tile : path)
                 {
                     vector_path.push_back(tile);
@@ -185,7 +215,12 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 
   //distance function:
   //returns the distance between two units passed as arguments
-  	double AI::distance(Unit unit1, Unit unit2){
+double AI::distance(Unit unit1, Unit unit2){
+    if(unit1 == NULL || unit2 == NULL){
+      std::cout << "Null unit." << std::endl;
+      return -1;
+    }
+    
 		//values that will determine distance;
 		int x1 = unit1->tile->x;
 		int x2 = unit2->tile->x;
@@ -204,20 +239,20 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
   ////////////////////////////ENEMY INFO FUNCTIONS////////////////////
   //vector functions that return info on enemy ships, see ai.hpp for more info
 
-  bool high_threat(Unit unit){
+  bool AI::high_threat(Unit unit){
 		//returns our current threat level, a value from 0.0 - 1.0
 		//thresholds are scaled up for larger range when unit has low hp
 		float unitHealth = (float)(unit->ship_health/20);
 		int healthScale = (1 - unitHealth)*10; //automagic flooring
 		float low = 3.0f + (float)healthScale; //lower threshold
 		float up = 10.0f + (float)healthScale; //upper threshold
-		std::vector<double> enemyDistances = dist_to_enemies(unit);
+		vector<double> enemyDistances = dist_to_enemies(unit);
 		float f, isNear, isFar;
-		int enemyCount;
+		int enemyCount = 0;
 		for(double ed : enemyDistances){
 			f = (float)ed;
-			isFar = Fuzzy.Grade(f,low,up);
-			isNear = Fuzzy.NOT(isFar);
+			isFar = Fuzzy::Grade(f,low,up);
+			isNear = Fuzzy::NOT(isFar);
 			if(isNear >= isFar){
 				/* if enemy is considered near
 				   in relation to our health
@@ -228,13 +263,13 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 		}
 		//thresholds are tighter when hp is lower for allies, since it needs more immediate protection
 		low = 6.0f - (float)healthScale;
-		high = 13.0f - (float)healthScale;
-		std::vector<double> allyDistances = dist_to_allies(unit);
-		int allyCount;
+		up = 13.0f - (float)healthScale;
+		vector<double> allyDistances = dist_to_allies(unit);
+		int allyCount = 0;
 		for(double ad : allyDistances){
 			f = (float)ad;
-			isFar = Fuzzy.Grade(f,low,up);
-			isNear = Fuzzy.NOT(isFar);
+			isFar = Fuzzy::Grade(f,low,up);
+			isNear = Fuzzy::NOT(isFar);
 			if(isNear >= isFar){
 				/* if ally is close enough to help */
 				allyCount++;
@@ -243,119 +278,154 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 		return enemyCount > allyCount;
 	}
   
-  template <typename T>
-  void AI::display_vector(std::vector<T> vec){
-    typename std::vector<T>::iterator itr;
-    for(itr = vec->begin(); itr!= vec.end(); itr++){
-      std::cout << *itr << std::endl;
-    }
-  }
+	template <typename T>
+	void AI::display_vector(vector<T> vec){
+		typename vector<T>::iterator itr;
+		for(itr = vec->begin(); itr!= vec.end(); itr++){
+			std::cout << *itr << std::endl;
+		}
+	}
   
-  std::vector<double> AI::dist_to_allies(Unit the_unit){
-    std::vector<double> temp; //return vector
-    for(Unit u : this->player->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(distance(u, the_unit));
-      }
-    }
-    return temp;
-  }
-  
-  std::vector<double> AI::dist_to_enemies(Unit the_unit){
-    std::vector<double> temp; //return vector
-    for(Unit u : this->player->opponent->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(distance(u, the_unit));
-      }
-    }
-    return temp;
-  }
+	vector<double> AI::dist_to_allies(Unit the_unit){
+		vector<double> temp; //return vector
+		for(Unit u : this->player->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(distance(u, the_unit));
+			}
+		}
+		return temp;
+	}
 
-  //returns the hp of the enemy fleet
-  std::vector<int> AI::enemy_fleet_health(){
-    std::vector<int> temp; //return vector
-    for(Unit u : this->player->opponent->units) {
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(u->ship_health);
-      }
-    }
-    return temp;
-  }
+	vector<double> AI::dist_to_enemies(Unit the_unit){
+		vector<double> temp; //return vector
+		for(Unit u : this->player->opponent->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(distance(u, the_unit));
+			}
+		}
+		return temp;
+	}
 
-  std::vector<int> AI::enemy_fleet_crew_count(){
-    std::vector<int> temp; //return vector
-    for(Unit u : this->player->opponent->units){
-      if(u->ship_health > 0){ //if the unit is a ship
-	temp.push_back(u->crew);
-      }
-    }
-    return temp;
-  }
+	//returns the hp of the enemy fleet
+	vector<int> AI::enemy_fleet_health(){
+		vector<int> temp; //return vector
+		for(Unit u : this->player->opponent->units) {
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(u->ship_health);
+			}
+		}
+		return temp;
+	}
 
-  std::vector<Unit> AI::find_abandoned_ships(){
-    std::vector<Unit> temp; //return vector
-    for(Unit u : this->game->units)//for every unit in the game..
-      //if it is a healthy ship with no crew then...
-      if(u->ship_health > 0 && u->crew == 0)
-	temp.push_back(u);
-    return temp;
-  }
+	vector<int> AI::enemy_fleet_crew_count(){
+		vector<int> temp; //return vector
+		for(Unit u : this->player->opponent->units){
+			if(u->ship_health > 0){ //if the unit is a ship
+				temp.push_back(u->crew);
+			}
+		}
+		return temp;
+	}
+
+	vector<Unit> AI::find_abandoned_ships(){
+		vector<Unit> temp; //return vector
+		for(Unit u : this->game->units){//for every unit in the game..
+			//if it is a healthy ship with no crew then...
+			if(u->ship_health > 0 && u->crew == 0){
+				temp.push_back(u);
+			}
+		}
+		return temp;
+	}
   /////////////////////////////////////////////////////////////////
   
-  
-	void AI::retreat(){
-	  this->retreat_rest();
+	void AI::retreat(Unit this_unit){
+		this->retreat_rest(this_unit);
 	}
-	void AI::retreat_rest(){
-	  //Running away, and healing.
-	  Unit unit = this->player->units[0];
+	void AI::retreat_rest(Unit this_unit){
+		//Running away, and healing.
+		Unit unit = this_unit;
 
-	  // Find a path to our port so we can heal
-	  std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
-	  if (path.size() > 0)
-		{
-		  // Move along the path if there is one
-		  unit->move(path[0]);
+		// Find a path to our port so we can heal
+		vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
+		if (path.size() > 0){
+			// Move along the path if there is one
+			unit->move(path[0]);
 		}
-	  else
-		{
-		  // Try to deposit any gold we have while we're here
-		  unit->deposit();
+		else{
+			// Try to deposit any gold we have while we're here
+			unit->deposit();
 
-		  // Try to rest
-		  unit->rest();
+			// Try to rest
+			unit->rest();
 		}
 	}
 
-	void AI::merchant_logic(){
-		// Try to attack a merchant
-		Unit unit = this->player->units[0];
+  void AI::endgame_aggression(Unit unit){
+    //Pick the closest approaching enemy (usually a merchant).
+    float closest_dist = 100;
+    Unit closest_enemy;
 
-		// Look for a merchant ship
-		Unit merchant = NULL;
-		std::vector<Unit> units = this->game->units;
-		for (unsigned int i = 0; i < units.size(); i++){
-			if (units[i]->target_port != NULL){
-				// Found one
-				merchant = units[i];
-				break;
+    for(Unit u: this->game->units){
+      std::cout << u->owner << std::endl;
+      if(u->owner != unit->owner && closest_dist < this->distance(unit, u)){
+        closest_enemy = u;
+      }
+    }
+
+    vector<Tile> path = this->find_path(unit->tile, closest_enemy->tile, unit);
+
+    //If you can't fire on the enemy, move closer to the port.
+    if (distance(unit,closest_enemy) > this->game->ship_range){
+      unit->move(path[0]);
+    }
+    else{
+      // Try to attack the nearest enemy ship. 
+      unit->attack(closest_enemy->tile, "ship");
+    }
+
+  }
+	void AI::merchant_logic(Unit unit){
+		vector<Port> m_ports;	//All the merchant ports on the map.
+
+		// Look for merchant ports.
+		for(Port p: this->game->ports){
+			if(p->owner == NULL){
+				m_ports.push_back(p);
 			}
 		}
 
-		// If we found a merchant, move to it, then attack it
-		if (merchant != NULL){
-			// Find a path to this merchant
-			while(unit->moves > 0){
-				std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
-				if (path.size() > this->game->ship_range){
-				// Move until we're withing firing range of the merchant
-				// Node: Range is *Circular* in pirates, so this can be improved on
+		//Decide which port to lazy river at.
+		auto murder_location = m_ports[0]->tile;
+		//Find a path to it.
+		vector<Tile> path = this->find_path(unit->tile, murder_location, unit);
+
+		//Pick the closest approaching enemy (usually a merchant).
+		float closest_dist = 100.0f;
+		Unit closest_enemy;
+
+		for(Unit u: this->game->units){
+			std::cout << u->owner << std::endl;
+			if(u->owner != unit->owner && closest_dist <= this->distance(unit, u)){
+				closest_enemy = u;
+			}
+		}
+
+		//Checking if closest is NULL.
+		if(closest_enemy == NULL){
+			std::cout << "merchant_logic.closest_enemy == NULL" << std::endl;
+			return;
+		}
+
+		//std::cout << "1" << std::endl;
+		//If you can't fire on the enemy, move closer to the port.
+		while(unit->moves > 0){
+			if (distance(unit,closest_enemy) > this->game->ship_range){
 				unit->move(path[0]);
-				}
-				else{
-				// Try to attack the merchant's ship
-				unit->attack(merchant->tile, "ship");
-				}
+			}
+			else{
+				// Try to attack the nearest enemy ship. 
+				unit->attack(closest_enemy->tile, "ship");
 			}
 		}
 	}
@@ -365,3 +435,16 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 } // pirates
 
 } // cpp_client
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+API
+Training
+Shop
+Blog
+About
+Press h to open a hovercard with more details.

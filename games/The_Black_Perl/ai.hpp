@@ -94,7 +94,7 @@ public:
   void display_vector(std::vector<T> vec);
   
   //returns a vector which contains the distances of all ally units
-  std::vector<double> AI::dist_to_allies(Unit the_unit);
+  std::vector<double> dist_to_allies(Unit the_unit);
   
   //returns a vector which contains the distances of all enemy units
   std::vector<double> dist_to_enemies(Unit the_unit);
@@ -111,16 +111,16 @@ public:
   std::vector<Unit> find_abandoned_ships();
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
-    void retreat();
+    void retreat(Unit this_unit);
 
     //<summary>
   	// This function, when called, signals a ship's frantic retreat for the port, it's attempt is to be healed.
-    void retreat_rest();
+    void retreat_rest(Unit this_unit);
 
     //<summary>
   	// Here is where we define any form of attack towards a merchant.
   	// TODO: Not likely a permanent function.
-    void merchant_logic();
+    void merchant_logic(Unit this_unit);
 
 
 
