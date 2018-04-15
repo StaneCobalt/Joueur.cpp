@@ -279,65 +279,62 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
   /////////////////////////////////////////////////////////////////
   
   
-void AI::retreat(){
-  this->retreat_rest();
-}
-void AI::retreat_rest(){
-  //Running away, and healing.
-  Unit unit = this->player->units[0];
+	void AI::retreat(){
+	  this->retreat_rest();
+	}
+	void AI::retreat_rest(){
+	  //Running away, and healing.
+	  Unit unit = this->player->units[0];
 
-  // Find a path to our port so we can heal
-  std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
-  if (path.size() > 0)
-    {
-      // Move along the path if there is one
-      unit->move(path[0]);
-    }
-  else
-    {
-      // Try to deposit any gold we have while we're here
-      unit->deposit();
+	  // Find a path to our port so we can heal
+	  std::vector<Tile> path = this->find_path(unit->tile, this->player->port->tile, unit);
+	  if (path.size() > 0)
+		{
+		  // Move along the path if there is one
+		  unit->move(path[0]);
+		}
+	  else
+		{
+		  // Try to deposit any gold we have while we're here
+		  unit->deposit();
 
-      // Try to rest
-      unit->rest();
-    }
-}
+		  // Try to rest
+		  unit->rest();
+		}
+	}
 
-  void AI::merchant_logic(){
-      // Try to attack a merchant
-      Unit unit = this->player->units[0];
+	void AI::merchant_logic(){
+		// Try to attack a merchant
+		Unit unit = this->player->units[0];
 
-      // Look for a merchant ship
-      Unit merchant = NULL;
-      std::vector<Unit> units = this->game->units;
-      for (unsigned int i = 0; i < units.size(); i++)
-      {
-          if (units[i]->target_port != NULL)
-          {
-              // Found one
-              merchant = units[i];
-              break;
-          }
-      }
+		// Look for a merchant ship
+		Unit merchant = NULL;
+		std::vector<Unit> units = this->game->units;
+		for (unsigned int i = 0; i < units.size(); i++){
+			if (units[i]->target_port != NULL){
+				// Found one
+				merchant = units[i];
+				break;
+			}
+		}
 
-      // If we found a merchant, move to it, then attack it
-      if (merchant != NULL)
-      {
-          // Find a path to this merchant
-          std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
-          if (path.size() > this->game->ship_range)
-          {
-              // Move until we're withing firing range of the merchant
-              // Node: Range is *Circular* in pirates, so this can be improved on
-              unit->move(path[0]);
-          }
-          else
-          {
-              // Try to attack the merchant's ship
-              unit->attack(merchant->tile, "ship");
-          }
-      }
-  }
+		// If we found a merchant, move to it, then attack it
+		if (merchant != NULL){
+			// Find a path to this merchant
+			while(unit->moves > 0){
+				std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
+				if (path.size() > this->game->ship_range){
+				// Move until we're withing firing range of the merchant
+				// Node: Range is *Circular* in pirates, so this can be improved on
+				unit->move(path[0]);
+				}
+				else{
+				// Try to attack the merchant's ship
+				unit->attack(merchant->tile, "ship");
+				}
+			}
+		}
+	}
 
 //<<-- /Creer-Merge: methods -->>
 
