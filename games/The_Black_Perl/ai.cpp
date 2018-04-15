@@ -208,13 +208,31 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 		return sqrt(distancex*distancex + distancey*distancey);
 
 	}
+
+  ////////////////////////////ENEMY INFO FUNCTIONS////////////////////
+  //vector functions that return info on enemy ships, see ai.hpp for more info
+  
   std::vector<double> AI::dist_to_enemies(Unit the_unit){
     std::vector<double> temp; //return vector
     for(Unit u : this->player->opponent->units){
-      temp.push_back(distance(u, the_unit));
+      if(u->ship_health > 0){
+	temp.push_back(distance(u, the_unit));
+      }
     }
     return temp;
   }
+
+  //returns the hp of the enemy fleet
+  std::vector<int> AI::enemy_fleet_health(){
+    std::vector<int> temp; //return vector
+    for(Unit u : this->player->opponent->units) {
+      if(u->ship_health > 0){ //if the unit is a ship
+	temp.push_back(u->ship_health);
+      }
+    }
+    return temp;
+  }
+  /////////////////////////////////////////////////////////////////
   
   
 bool AI::retreat(){

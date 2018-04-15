@@ -82,8 +82,17 @@ public:
   //returns a double which is the coordinate distance between the argument units
   double distance(Unit unit1, Unit unit2);
 
+  /////////////////////ENEMY INFO FUNCTIONS//////////////////////////////////
+  //these functions return a vector containing information on the enemy fleet
+  //based upon the way the info is fetched, the respective indexes of the vectors
+  //should refer to the same enemy unit, provided that the functinos are called in
+  //the SAME TURN
+  
   //returns a vector which contains the distances of all enemy units
   std::vector<double> dist_to_enemies(Unit the_unit);
+
+  //returns a vector which contains the ship hp of all enemy ships
+  std::vector<int> enemy_fleet_health();
   
   	//<summary>
   	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
