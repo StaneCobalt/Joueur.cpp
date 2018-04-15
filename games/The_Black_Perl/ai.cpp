@@ -71,25 +71,19 @@ bool AI::run_turn()
     // <<-- Creer-Merge: runTurn -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
   
 
-
-
-
-  	//Actions based upon unit sizes.
-    switch(this->player->units.size())
+    if (this->player->units.size() == 0)
     {
-    case 0:
       // Spawn a crew if we have no units
       this->player->port->spawn("crew");
-    case 1:
+    }
+    else if (this->player->units[0]->ship_health == 0)
+    {
       // Spawn a ship so our crew can sail
       this->player->port->spawn("ship");
     }
-
-
-
     // Heal our unit if the ship is almost dead
     // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
-    if (this->player->units[0]->ship_health < this->game->ship_health / 2)
+    else if (this->player->units[0]->ship_health < this->game->ship_health / 2)
     {
       this->retreat();
     }
