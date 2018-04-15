@@ -345,37 +345,39 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 		}
 	}
 
-	void AI::merchant_logic(Unit this_unit){
-		// Try to attack a merchant
-		Unit unit = this_unit;
+	void AI::merchant_logic(Unit unit){
 
-		// Look for a merchant ship
-		Unit merchant = NULL;
-		std::vector<Unit> units = this->game->units;
-		for (unsigned int i = 0; i < units.size(); i++){
-			if (units[i]->target_port != NULL){
-				// Found one
-				merchant = units[i];
-				break;
-			}
-		}
+    std::vector<Port> m_ports;						//All the merchant ports on the map.
 
-		// If we found a merchant, move to it, then attack it
-		if (merchant != NULL){
-			// Find a path to this merchant
-			while(unit->moves > 0){
-				std::vector<Tile> path = this->find_path(unit->tile, merchant->tile, unit);
-				if (path.size() > this->game->ship_range){
-				// Move until we're withing firing range of the merchant
-				// Node: Range is *Circular* in pirates, so this can be improved on
-				unit->move(path[0]);
-				}
-				else{
-				// Try to attack the merchant's ship
-				unit->attack(merchant->tile, "ship");
-				}
-			}
-		}
+    // Look for merchant ports.
+		for(Port p: this->game->ports){
+    	if(p->owner == NULL)
+        m_ports.push_back(p);
+    }
+
+    //Decide which port to lazy river at.
+    auto murder_location = m_ports[0]->tile;
+    //Find a path to it.
+    std::vector<Tile> path = this->find_path(unit->tile, murder_location, unit);
+
+    //Pick the closest approaching enemy (usually a merchant).
+    float closest_dist = 100;
+    Unit closest_enemy;
+    for(Unit u: this->game->units){
+      if(u->owner != unit->owner && closest_dist < this->distance(unit, u)){
+        closest_enemy = u;
+      }
+    }
+
+    //If you can't fire on the enemy, move closer to the port.
+    if (distance(unit,closest_enemy) > this->game->ship_range){
+      unit->move(path[0]);
+    }
+    else{
+      // Try to attack the nearest enemy ship. 
+      unit->attack(closest_enemy->tile, (std::string)"ship");
+    }
+
 	}
 
 //<<-- /Creer-Merge: methods -->>

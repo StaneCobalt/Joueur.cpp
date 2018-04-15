@@ -120,7 +120,7 @@ public:
     //<summary>
   	// Here is where we define any form of attack towards a merchant.
   	// TODO: Not likely a permanent function.
-    void merchant_logic(Unit this_unit);
+    void merchant_logic(Unit unit);
 
 
 
