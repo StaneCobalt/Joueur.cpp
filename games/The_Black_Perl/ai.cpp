@@ -84,7 +84,9 @@ bool AI::run_turn()
       // Spawn a ship so our crew can sail
       this->player->port->spawn("ship");
     }
-
+    // vector<double> distancesList = dist_to_enemies(this->player->units[0]);
+    // for(std::vector<double>::iterator it = distancesList.begin(); it != distancesList.end(); it++)
+    //  cout << it;
 
 
     // Heal our unit if the ship is almost dead
@@ -210,7 +212,14 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 		return sqrt(distancex*distancex + distancey*distancey);
 
 	}
-
+  std::vector<double> AI::dist_to_enemies(Unit the_unit){
+    std::vector<double> temp; //return vector
+    for(Unit u : this->player->opponent->units){
+      temp.push_back(distance(u, the_unit));
+    }
+    return temp;
+  }
+  
   
 bool AI::retreat(){
   this->retreat_rest();
