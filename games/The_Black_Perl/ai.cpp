@@ -75,19 +75,24 @@ bool AI::run_turn()
 
 
   	//Actions based upon unit sizes.
-    switch(this->player->units.size())
-    {
-    case 0:
-      // Spawn a crew if we have no units
-      this->player->port->spawn("crew");
-	  break;
-    case 1:
-      // Spawn a ship so our crew can sail
-      this->player->port->spawn("ship");
-	  break;
-	 default:
-	  break;
-    }
+	if(this->player->units.size() <= 0){
+		this->player->port->spawn("crew");
+	}
+	else{
+		switch(this->player->units.size() % 2)
+		{
+			case 0:
+			  // Spawn a crew if we have no units
+				this->player->port->spawn("crew");
+				break;
+			case 1:
+			  // Spawn a ship so our crew can sail
+				this->player->port->spawn("ship");
+				break;
+			default:
+				break;
+		}
+	}
 
     // Heal our unit if the ship is almost dead
     // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
@@ -238,7 +243,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 				threat += 1.0f;
 			}
 		}
-		return Fuzzy.NOT(Fuzzy.Triangle(threat, 5.0f, 2.0f, 8.0f));
+		return Fuzzy.Grade(threat, 2.0f, 4.0f);
 	}
   
   template <typename T>
