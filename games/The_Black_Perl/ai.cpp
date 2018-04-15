@@ -84,7 +84,7 @@ bool AI::run_turn()
       // Heal our unit if the ship is almost dead
       // Node: Crew also have their own health. Maybe try adding a check to see if the crew need healing?
 
-      damaged_ship_heal();
+      retreat_rest();
     }
     else
     {
@@ -178,7 +178,7 @@ std::vector<Tile> AI::find_path(const Tile& start, const Tile& goal, const Unit&
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add additional methods here for your AI to call
 
-bool AI::retreat_heal(){
+bool AI::retreat_rest(){
   Unit unit = this->player->units[0];
 
   // Find a path to our port so we can heal
