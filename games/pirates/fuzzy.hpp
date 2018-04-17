@@ -1,11 +1,11 @@
 class Fuzzy {
 	public:
-			float AND(float A, float B) { return (A < B) ? A : B; }
-			float OR(float A, float B) { return (A > B) ? A : B; }
-			float NOT(float x) { return (1.0f - x); }
-			float Grade(float x, float lowerThreshold, float upperThreshold);
-			float Triangle(float x, float x2, float lowerThreshold, float upperThreshold);
-}
+			static float AND(float A, float B) { return (A < B) ? A : B; } //returns logical AND, this is equivalent to finding the minimum
+			static float OR(float A, float B) { return (A > B) ? A : B; } //returns logical OR, this is equivalent to finding the max
+			static float NOT(float x) { return (1.0f - x); } //this is equivalent to doing a !=
+			static float Grade(float x, float lowerThreshold, float upperThreshold); //return 0 is <= to lowerThreshold, returns 1 if >= upperThreshold, returns an upward slope value if in between
+			static float Triangle(float x, float m, float lowerThreshold, float upperThreshold); //like grade, but the in between value will be a downward slope value is over m
+};
 
 float Fuzzy::Grade(float x, float lowerThreshold, float upperThreshold){
 	if(x <= lowerThreshold) return 0;

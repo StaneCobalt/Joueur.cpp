@@ -75,6 +75,58 @@ public:
 
     // <<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // You can add additional methods here.
+
+
+
+  //distance func
+  //returns a double which is the coordinate distance between the argument units
+  double distance(Unit unit1, Unit unit2);
+
+  /////////////////////ENEMY INFO FUNCTIONS//////////////////////////////////
+  //these functions return a vector containing information on the enemy fleet
+  //based upon the way the info is fetched, the respective indexes of the vectors
+  //should refer to the same enemy unit, provided that the functinos are called in
+  //the SAME TURN
+
+  bool high_threat(Unit unit);
+  
+  template <typename T>
+  void display_vector(std::vector<T> vec);
+  
+  //returns a vector which contains the distances of all ally units
+  std::vector<double> dist_to_allies(Unit the_unit);
+  
+  //returns a vector which contains the distances of all enemy units
+  std::vector<double> dist_to_enemies(Unit the_unit);
+
+  //returns a vector which contains the ship hp of all enemy ships
+  std::vector<int> enemy_fleet_health();
+
+  //finds every ship in the enemy fleet and returns a vector
+  //containing the number of crew in them.
+  //keep in mind an abandoned ship is not in the enemy fleet
+  std::vector<int> enemy_fleet_crew_count();
+
+  //function returns a vector containing all abandoned ships
+  std::vector<Unit> find_abandoned_ships();
+  	//<summary>
+  	// General retreat logic, dictates how long to retreat based upon fuzzy logic, calls retreat_rest() if dying.
+    void retreat(Unit this_unit);
+
+    //<summary>
+  	// This function, when called, signals a ship's frantic retreat for the port, it's attempt is to be healed.
+    void retreat_rest(Unit this_unit);
+
+    //<summary>
+  	// Here is where we define any form of attack towards a merchant.
+  	// TODO: Not likely a permanent function.
+    void merchant_logic(Unit unit);
+
+    void endgame_aggression(Unit unit);
+
+
+
+
     // <<-- /Creer-Merge: methods -->>
 
 /// A very basic path finding algorithm (Breadth First Search) that when given a starting Tile, will return a valid path to the goal Tile.
